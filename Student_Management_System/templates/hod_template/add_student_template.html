@@ -1,0 +1,201 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+                Add Student
+{% endblock %}
+{% block main_content %}
+
+    <section class="content">
+      <div class="container-fluid">
+          <div class="row">
+              <div class="col-md-12">
+                  <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Add Student</h3>
+              </div>
+              <!-- /.card-header -->
+              <!-- form start -->
+              <form role="form" action="/add_student_save" method="post" enctype="multipart/form-data">
+                  {% csrf_token %}
+                <div class="card-body">
+                  <div class="form-group">
+                    <label for="id_email">Email address</label>
+                    <input type="email" class="form-control" placeholder="Enter email" name="email" required id="id_email">
+                  </div>
+                  <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-control" placeholder="Password" name="password">
+                  </div>
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" class="form-control" placeholder="First Name" name="first_name">
+                    </div>
+
+                     <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" class="form-control" placeholder="Last Name" name="last_name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_username">Username</label>
+                        <input type="text" class="form-control" placeholder="username " name="username" required id="id_username">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" class="form-control" placeholder="Address " name="address">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Course</label>
+                      <select class="form-control" name="course">
+                          {% for course in course %}
+                              <option value="{{ course.id }}">{{ course.course_name }}</option>
+                          {% endfor %}
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Gender</label>
+                      <select class="form-control" name="gender">
+                          <option>Male</option>
+                          <option>Female</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Session Year</label>
+                      <select class="form-control" name="session_year_id">
+                          {% for session_year in session_years %}
+                              <option value="{{ session_year.id }}">{{ session_year.session_start_year }}   to   {{ session_year.session_end_year }}</option>
+                          {% endfor %}
+                      </select>
+                    </div>
+
+
+
+
+                    <div class="form-group">
+                        <label>Profile Image</label>
+                        <input type="file" class="form-control" placeholder="Session End Year " name="profile_pic">
+                    </div>
+
+
+                <div class="form-group">
+                    {% if messages %}
+                        <div class="col-12">
+                            {% for message in messages %}
+                                {% if message.tags == 'error' %}
+                                    <div class="alert alert-danger text-center" style="margin-top: 10px">{{ message }}</div>
+                                {% endif %}
+                                {% if message.tags == 'success' %}
+                                    <div class="alert alert-success text-center" style="margin-top: 10px">{{ message }}</div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+
+
+                </div>
+                <!-- /.card-body -->
+
+                <div class="card-footer">
+                  <button type="submit" class="btn btn-primary btn -block">Add Student</button>
+                </div>
+              </form>
+            </div>
+
+
+              </div>
+
+          </div>
+
+      </div>
+    </section>
+{% endblock %}
+{% block custom_js %}
+    <script>
+    $(document).ready(function () {
+        $("#id_email").keyup(function () {
+            var email=$(this).val();
+             if(email!=""){
+
+            $.ajax({
+                url:'{% url 'check_email_exist' %}',
+                type:'POST',
+                data:{email:email}
+            })
+            .done(function (response) {
+                console.log(response);
+                if (response=='True'){
+                    $(".email_error").remove();
+                    $("<span class=' email_error' style='padding: 5px;font-weight: bold;color: red'>Email Not Available</span>").insertAfter("#id_email");
+                }
+                else {
+                     $(".email_error").remove();
+                    $("<span class='email_error' style='padding: 5px;font-weight: bold;color: green'>Email  Available</span>").insertAfter("#id_email");
+                }
+
+
+            })
+            .fail(function () {
+                console.log("Failed");
+
+
+            })
+        }
+             else {
+                 $(".email_error").remove();
+
+             }
+
+
+        });
+
+
+        $("#id_username").keyup(function () {
+            var username=$(this).val();
+            if(username!=""){
+
+            $.ajax({
+                url:'{% url 'check_username_exist' %}',
+                type:'POST',
+                data:{username:username}
+            })
+            .done(function (response) {
+                console.log(response);
+                if (response=='True'){
+                    $(".username_error").remove();
+                    $("<span class=' username_error' style='padding: 5px;font-weight: bold;color: red'>Username Not Available</span>").insertAfter("#id_username");
+                }
+                else {
+                     $(".username_error").remove();
+                    $("<span class='username_error' style='padding: 5px;font-weight: bold;color: green'>Username  Available</span>").insertAfter("#id_username");
+                }
+
+
+            })
+            .fail(function () {
+                console.log("Failed");
+
+
+            })
+                }
+            else{
+                $(".username_error").remove();
+            }
+
+
+        });
+
+
+
+
+
+    });
+    </script>
+
+
+
+{% endblock %}
